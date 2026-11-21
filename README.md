@@ -28,10 +28,7 @@ The journal receives a receipt after the author approves it. **`reportable` answ
 | `flag` (default) | **Yes.** At least one interest qualifies. The organization and relationship type stay private. |
 | `matches` | **Yes. Research funding from Lark Computing.** The receipt also identifies the rule that matched, the relationship type and the organization. |
 
-Both receipts identify which rules were used and which submission the answer belongs to.
-
-- **Which rules?** The journal's policy ID is `example.period`, and its revision is `2`. If the journal later changes the lookback to 60 months, it issues a new revision. This receipt still answers the original 36-month question.
-- **Which submission?** The journal can use `submissionId` (here, `author-copy-001`) to associate the answer with this author's submission. The `submissionDate` is 20 November 2026, the date used to count back 36 months.
+Both modes identify the policy revision and the submission so the editor can tell which question the author answered. [Glossary of receipt terms](#glossary)
 
 The Fern engagement stays private in both modes. The author reads the statement above separately. The receipt itself contains structured fields. [Full example receipt](examples/period.json)
 
@@ -83,3 +80,25 @@ Run the suite on Node 22+ with pnpm.
     pnpm test
 
 The package builds with its own lockfile. The examples contain fictional journals and organizations. Draft 0.1 is available for local integration and evaluation.
+
+## FAQ
+
+**Does a reportable tie disqualify an author?** A positive result tells the editor that the journal's disclosure rules cover at least one interest. The journal decides how to handle it.
+
+**Does sharing a receipt give the journal access to my record?** You review the recipient and the exact information you agree to send. The journal receives that receipt. Your other ties and private notes stay in your account.
+
+**What if I need to correct an answer?** You review and approve a new receipt. It has its own ID and identifies the earlier receipt it replaces, so the editor can follow the correction.
+
+### Glossary
+
+| Term | Meaning in this protocol |
+| --- | --- |
+| **Policy ID** (`policyId`) | The journal's identifier for a particular disclosure policy. The worked example uses `example.period`. |
+| **Policy revision** (`revision`) | The edition of that policy used for the submission. Revision `2` asks about the previous 36 months. If the journal changes that period to 60 months, it issues a new revision. The original receipt still refers to revision `2`. |
+| **Protocol version** (`protocolVersion`) | The edition of the shared instructions that software uses to read policies and receipts. This draft uses `0.1`. Many journal policies can use the same protocol version. |
+| **Submission references** (`submissionId`, `submissionDate`) | The ID tells the receiving journal which author's submission the answer belongs to, such as `author-copy-001`. The date anchors any lookback. Here the journal counts back from 20 November 2026. |
+| **Lookback** | How far back the journal asks the author to review their ties. In the example, the 36-month window includes both 20 November 2023 and 20 November 2026. |
+| **Completeness attestation** | The author's confirmation that they have reported all ties covered by a particular rule for this submission. It covers the organizations, relationship types and period or manuscript specified by that rule. |
+| **Reportable** (`reportable`) | The answer to “Does anything meet this policy?” It is `true` for a confirmed match, `false` when a complete review finds none, and `null` when the information is insufficient to decide. |
+| **Receipt mode** (`mode`) | How much detail the author approves for the journal. `flag` gives the overall answer. `matches` also identifies the qualifying ties or affirmative answers. Both modes include the policy and submission references. |
+| **Receipt ID** (`receiptId`) | Identifies one approved response. A corrected receipt gets a new ID and uses `supersedes` to identify the earlier receipt. |
