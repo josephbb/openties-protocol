@@ -1,0 +1,115 @@
+{
+  "policy": {
+    "protocolVersion": "0.1",
+    "policyId": "example.industry",
+    "revision": "1",
+    "publisher": "Example Publishing",
+    "title": "Example Journal Industry Policy",
+    "policyUrl": "https://example.org/policies/industry/1",
+    "role": "author",
+    "relationshipTypes": [
+      {
+        "id": "research_funding",
+        "label": "research funding"
+      },
+      {
+        "id": "collaboration",
+        "label": "research collaboration"
+      },
+      {
+        "id": "employment",
+        "label": "employment"
+      }
+    ],
+    "organizations": [
+      {
+        "id": "example:lark",
+        "label": "Lark Computing"
+      },
+      {
+        "id": "example:alder",
+        "label": "Alder Systems"
+      }
+    ],
+    "rules": [
+      {
+        "id": "industry",
+        "label": "Research funding, research collaboration or employment involving a listed company in the past 36 months",
+        "kind": "ties",
+        "relationshipTypes": [
+          "research_funding",
+          "collaboration",
+          "employment"
+        ],
+        "organizationIds": [
+          "example:lark",
+          "example:alder"
+        ],
+        "window": {
+          "kind": "lookback",
+          "months": 36
+        }
+      }
+    ]
+  },
+  "input": {
+    "protocolVersion": "0.1",
+    "policyId": "example.industry",
+    "revision": "1",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "ties": [
+      {
+        "relationshipType": "research_funding",
+        "organizationId": "example:lark",
+        "start": "2024",
+        "end": "2025",
+        "supportedSubmittedWork": null
+      },
+      {
+        "relationshipType": "collaboration",
+        "organizationId": "example:alder",
+        "start": "2025",
+        "end": "2025",
+        "supportedSubmittedWork": null
+      },
+      {
+        "relationshipType": "employment",
+        "organizationId": "example:alder",
+        "start": "2020",
+        "end": "2022",
+        "supportedSubmittedWork": null
+      }
+    ],
+    "completeRuleIds": [
+      "industry"
+    ],
+    "unresolvedRuleIds": [],
+    "answers": []
+  },
+  "receipt": {
+    "protocolVersion": "0.1",
+    "policyId": "example.industry",
+    "revision": "1",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "receiptId": "example-receipt",
+    "mode": "matches",
+    "reportable": true,
+    "matches": [
+      {
+        "ruleId": "industry",
+        "kind": "tie",
+        "relationshipType": "research_funding",
+        "organizationId": "example:lark"
+      },
+      {
+        "ruleId": "industry",
+        "kind": "tie",
+        "relationshipType": "collaboration",
+        "organizationId": "example:alder"
+      }
+    ]
+  },
+  "statement": "The author reports research funding (Lark Computing). The author reports research collaboration (Alder Systems). The author declares no other interests reportable under Example Journal Industry Policy (revision 1) for this submission."
+}

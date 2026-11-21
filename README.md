@@ -1,62 +1,83 @@
 # OpenTies Disclosure Policy Protocol
 
-Draft 0.1, for individual author disclosures at manuscript submission.
+Over the course of a career, researchers accumulate financial and non-financial ties. We take jobs, receive grants, consult, and write papers with colleagues in industry. Whether any of those ties might reasonably be viewed as a conflict of interest depends on the work at hand and on who's asking. A journal might ask about a grant that ended two years ago. A funder reviewing the same researcher's application might care only about support the researcher receives today.
 
-A publisher defines what an author must disclose. For each submission, the author reviews a statement and approves exactly what the journal will receive. The author's private record stays with the evaluating system.
+At submission, we usually ask authors to reconstruct that history from memory, read the journal's policy, and work out what belongs in a disclosure statement. The next journal may ask a slightly different question. An author willing to publish a full list of ties can save everyone some work. Others may be quite willing to disclose who funded a particular study while preferring to keep the rest of their professional lives private. Requiring a public list as the price of participation risks losing those authors altogether.
 
-## Worked example
+OpenTies is a proposal for handling that exchange. A requester, such as a journal, funder, or employer, maintains a policy and can issue a new revision when its requirements change. The researcher's software checks their private record against the applicable revision and asks them about anything the record can't settle. The researcher reviews the answer and approves what the requester will see. The requester gets an answer to its own question and decides what to do with it. The policy and response use a common format, so the two parties can use different platforms and programming languages.
 
-**What the journal asks.** For a manuscript submitted on 20 November 2026, Example Publishing requires authors to disclose research funding or paid consulting from Lark Computing or Fern Foundation during the previous 36 months. Under revision 2 of its policy, the period runs from 20 November 2023 through 20 November 2026, inclusive.
+## How might this be used?
 
-**What the author reports privately.** This walkthrough adds an earlier consulting engagement to the [machine-readable example](examples/period.json) to show how the cutoff works.
+Draft 0.1 covers authors submitting manuscripts to journals. The first example runs against the reference implementation. The next two are worked hypotheticals showing how the same approach might be useful in litigation and grant review.
 
-| Author's tie | When | Does the journal require it? |
-| --- | --- | --- |
-| Research funding from Lark Computing | 2024–2025 | Yes. The grant overlaps the disclosure period. |
-| Paid consulting for Fern Foundation | 2021 | No. The engagement ended before the period began. |
+<a id="worked-example"></a>
 
-The author confirms they have listed all funding and consulting covered by this rule. The grant makes the answer **yes**. The author's confirmation, with no outstanding questions, also supports the second sentence of their statement.
+### 1. A journal asks about three years of industry ties
 
-> The author reports research funding (Lark Computing). The author declares no other interests reportable under Example Period Policy (revision 2) for this submission.
+A journal asks authors to disclose research collaborations, funding, and employment involving two companies named in its policy, Lark Computing and Alder Systems. It asks about the three years up to and including submission. For a paper submitted on **20 November 2026**, that takes the author back to **20 November 2023**.
+
+| What the author has on record | Does it belong in this statement? |
+| --- | --- |
+| Lark funded the author's research in 2024–2025. | Yes. The grant ran during the three years the journal asks about. |
+| The author collaborated with researchers at Alder in 2025. | Yes. The rule covers research collaborations, including unpaid work. |
+| The author worked for Alder from 2020 to 2022. | No. The job ended before the window opened. |
+
+The author checks all three categories for both companies and confirms the list is complete for that period. The author could use this statement in the paper.
+
+> I received research funding from Lark Computing and collaborated with researchers at Alder Systems. I have no other ties to disclose under the journal's three-year policy.
 
 ### What the journal receives
 
-The journal receives a receipt after the author approves it. **`reportable` answers “Is there anything to disclose under this policy?”** The **`mode`** field controls how much detail accompanies that answer. For this author, either mode gives the same result.
+The author can share that statement with the paper. Separately, the journal's software can receive a **receipt** for this submission. The author sees who will receive it and approves the level of detail. Both modes answer the same question. Does the author have anything to disclose under this policy?
 
-| Receipt mode | What the editor learns in this example |
+| Mode | What the editor receives in this case |
 | --- | --- |
-| `flag` (default) | **Yes.** At least one interest qualifies. The organization and relationship type stay private. |
-| `matches` | **Yes. Research funding from Lark Computing.** The receipt also identifies the rule that matched, the relationship type and the organization. |
+| `flag` (the default) | **Yes.** At least one tie meets the rule. |
+| `matches` | **Yes.** Research funding from Lark Computing and research collaboration with Alder Systems. |
 
-Both modes identify the policy revision and the submission so the editor can tell which question the author answered. [Glossary of receipt terms](#glossary)
-
-The Fern engagement stays private in both modes. The author reads the statement above separately. The receipt itself contains structured fields. [Full example receipt](examples/period.json)
-
-Either mode can return one of three answers.
-
-| `reportable` | How to read it |
-| --- | --- |
-| `true` | At least one interest qualifies. Even if the author still had another rule to review, the Lark grant would make this **yes**. A “no other interests” statement requires a complete review. |
-| `false` | No interest qualifies and the review is complete. This would be the answer if the author had only the 2021 Fern engagement and confirmed the full scope. |
-| `null` | The information is insufficient to answer. If the Fern engagement were the only known tie and the author had yet to confirm the full scope, the answer would still be **unknown**. |
+Both receipts identify the submission and the policy revision. Neither lists the earlier job at Alder. One confirmed grant is enough for a **yes** (`true`), even if another question is open. A **no** (`false`) requires a complete review that found no qualifying ties. If the author has yet to establish either answer, the result is **unknown** (`null`). [Full journal policy, private input, generated statement and receipt](examples/industry.json) · [Glossary](#glossary)
 
 <details>
 <summary>See the journal rule as JSON</summary>
 
 ```json
 {
-  "id": "period",
-  "label": "Funding and consulting from the two listed organizations in the past 36 months",
+  "id": "industry",
+  "label": "Research funding, research collaboration or employment involving a listed company in the past 36 months",
   "kind": "ties",
-  "relationshipTypes": ["research_funding", "consulting"],
-  "organizationIds": ["example:lark", "example:fern"],
-  "window": {"kind": "lookback", "months": 36}
+  "relationshipTypes": [
+    "research_funding",
+    "collaboration",
+    "employment"
+  ],
+  "organizationIds": [
+    "example:lark",
+    "example:alder"
+  ],
+  "window": {
+    "kind": "lookback",
+    "months": 36
+  }
 }
 ```
 
 </details>
 
-Some journals also ask whether a grant **supported this manuscript**, regardless of its age. The [submitted-work example](examples/work.json) shows an older grant that qualifies and a separate question the author has yet to answer.
+### 2. A plaintiff asks about a defense expert's prior work
+
+Suppose a plaintiff's lawyer is considering a *Daubert* challenge to expert testimony about a Lark product. The lawyer wants to know whether, in the five years before the expert's report, Lark paid the witness to consult or give expert testimony about that product.
+
+Suppose Lark paid the witness in 2024 to evaluate the product using the same test method discussed in the report. In 2025 the witness also testified in a dispute involving a different manufacturer. For a report dated 20 November 2026, the consulting engagement falls within the requested period and concerns the named product. The testimony in the other dispute concerns a different company and falls outside the request.
+
+With the witness's approval, a detailed response could say **“Yes. Paid consulting for Lark Computing.”** Counsel could then ask whether that work involved the test method used in the report and, if so, what the expert learned about its reliability. A fee may bear on bias. The court considering admissibility must separately assess the basis and reliability of the testimony under Rule 702. The five-year period here is the lawyer's hypothetical request. [Federal Rules of Evidence, Rule 702](https://www.uscourts.gov/forms-rules/current-rules-practice-procedure/federal-rules-evidence)
+
+### 3. A funder asks about ongoing ties to the companies under study
+
+A funder invites proposals to compare products made by Lark Computing and Alder Systems. Its eligibility rule says applicants may have **no ongoing research collaboration with, or research funding from, either company on the application date**.
+
+Take the author from the journal example, applying for the grant on the same day. The Lark grant ended in 2025, and the collaboration with Alder also finished that year. The author checks for any other funding or collaboration with either company and confirms there is none. Asked “Do you have a tie covered by this rule?”, the answer is **no**. That answer satisfies this particular eligibility condition. The journal still gets a **yes** from the same record because it asks about the past three years.
+
+If the author and the Alder team are still working together on the application date, the answer becomes **yes**. With approval to share the match, the funder would see **“Ongoing research collaboration with Alder Systems.”** If the records leave the end date open and the applicant hasn't confirmed whether the work continues, the answer is **unknown**. The funder would need that point resolved to establish eligibility.
 
 ## Reading the schema
 
@@ -79,7 +100,7 @@ Run the suite on Node 22+ with pnpm.
     pnpm install --frozen-lockfile
     pnpm test
 
-The package builds with its own lockfile. The examples contain fictional journals and organizations. Draft 0.1 is available for local integration and evaluation.
+The examples use fictional organizations. To try other journal policies, see the [funding and consulting example](examples/period.json) and the [example of direct support for a manuscript](examples/work.json).
 
 ## FAQ
 
@@ -93,10 +114,10 @@ The package builds with its own lockfile. The examples contain fictional journal
 
 | Term | Meaning in this protocol |
 | --- | --- |
-| **Policy ID** (`policyId`) | The journal's identifier for a particular disclosure policy. The worked example uses `example.period`. |
-| **Policy revision** (`revision`) | The edition of that policy used for the submission. Revision `2` asks about the previous 36 months. If the journal changes that period to 60 months, it issues a new revision. The original receipt still refers to revision `2`. |
+| **Policy ID** (`policyId`) | The journal's identifier for a particular disclosure policy. The journal example uses `example.industry`. |
+| **Policy revision** (`revision`) | The edition of that policy used for the submission. In the journal example, revision `1` asks about the previous 36 months. If the journal changes that period to 60 months, it issues a new revision. The original receipt still refers to revision `1`. |
 | **Protocol version** (`protocolVersion`) | The edition of the shared instructions that software uses to read policies and receipts. This draft uses `0.1`. Many journal policies can use the same protocol version. |
-| **Submission references** (`submissionId`, `submissionDate`) | The ID tells the receiving journal which author's submission the answer belongs to, such as `author-copy-001`. The date anchors any lookback. Here the journal counts back from 20 November 2026. |
+| **Submission references** (`submissionId`, `submissionDate`) | The ID tells the receiving journal which author's submission the answer belongs to, such as `author-copy-001`. The submission date sets the end of the period under review. Here the journal counts back from 20 November 2026. |
 | **Lookback** | How far back the journal asks the author to review their ties. In the example, the 36-month window includes both 20 November 2023 and 20 November 2026. |
 | **Completeness attestation** | The author's confirmation that they have reported all ties covered by a particular rule for this submission. It covers the organizations, relationship types and period or manuscript specified by that rule. |
 | **Reportable** (`reportable`) | The answer to “Does anything meet this policy?” It is `true` for a confirmed match, `false` when a complete review finds none, and `null` when the information is insufficient to decide. |

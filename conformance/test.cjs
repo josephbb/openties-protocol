@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 const { evaluate, receipt, statement } = require("../dist/src/index.js");
 const examples = {
+	industry: require("../examples/industry.json"),
 	period: require("../examples/period.json"),
 	work: require("../examples/work.json"),
 };
