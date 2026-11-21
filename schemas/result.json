@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Approved journal-facing projection",
+  "type": "object",
+  "properties": {
+    "protocolVersion": {
+      "const": "0.1"
+    },
+    "policyId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+    },
+    "submissionId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+    },
+    "submissionDate": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-",
+      "format": "date"
+    },
+    "receiptId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+    },
+    "supersedes": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+    },
+    "mode": {
+      "enum": [
+        "flag",
+        "matches"
+      ]
+    },
+    "reportable": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "matches": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ruleId": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+              },
+              "kind": {
+                "const": "tie"
+              },
+              "relationshipType": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+              },
+              "organizationId": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "ruleId",
+              "kind",
+              "relationshipType",
+              "organizationId"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ruleId": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+              },
+              "kind": {
+                "const": "answer"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "ruleId",
+              "kind"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "protocolVersion",
+    "policyId",
+    "revision",
+    "submissionId",
+    "submissionDate",
+    "receiptId",
+    "mode",
+    "reportable"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "flag"
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "required": [
+            "matches"
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "matches"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "reportable": {
+            "enum": [
+              false,
+              null
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "matches": {
+            "maxItems": 0,
+            "type": "array"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "matches": {
+            "minItems": 1,
+            "type": "array"
+          }
+        }
+      }
+    }
+  ]
+}

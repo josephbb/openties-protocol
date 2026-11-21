@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Private evaluation input",
+  "type": "object",
+  "properties": {
+    "protocolVersion": {
+      "const": "0.1"
+    },
+    "policyId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+    },
+    "submissionId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+    },
+    "submissionDate": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-",
+      "format": "date"
+    },
+    "ties": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "relationshipType": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "organizationId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "start": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]{4}-",
+                    "format": "date"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]{4}$"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "end": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]{4}-",
+                    "format": "date"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]{4}$"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "supportedSubmittedWork": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "relationshipType",
+          "organizationId",
+          "start",
+          "end",
+          "supportedSubmittedWork"
+        ]
+      }
+    },
+    "completeRuleIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+      },
+      "uniqueItems": true
+    },
+    "unresolvedRuleIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+      },
+      "uniqueItems": true
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ruleId": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "ruleId",
+          "answer"
+        ]
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "protocolVersion",
+    "policyId",
+    "revision",
+    "submissionId",
+    "submissionDate",
+    "ties",
+    "completeRuleIds",
+    "unresolvedRuleIds",
+    "answers"
+  ]
+}

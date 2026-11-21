@@ -1,0 +1,98 @@
+{
+  "policy": {
+    "protocolVersion": "0.1",
+    "policyId": "example.work",
+    "revision": "1",
+    "publisher": "Example Publishing",
+    "title": "Example Work Policy",
+    "policyUrl": "https://example.org/policies/work/1",
+    "role": "author",
+    "relationshipTypes": [
+      {
+        "id": "research_funding",
+        "label": "research funding"
+      },
+      {
+        "id": "consulting",
+        "label": "paid consulting"
+      }
+    ],
+    "organizations": [
+      {
+        "id": "example:lark",
+        "label": "Lark Computing"
+      },
+      {
+        "id": "example:fern",
+        "label": "Fern Foundation"
+      }
+    ],
+    "rules": [
+      {
+        "id": "work",
+        "label": "Any funding from the two listed organizations that supported this submission",
+        "kind": "ties",
+        "relationshipTypes": [
+          "research_funding"
+        ],
+        "organizationIds": [
+          "example:lark",
+          "example:fern"
+        ],
+        "window": {
+          "kind": "submitted-work"
+        }
+      },
+      {
+        "id": "other",
+        "kind": "author-question",
+        "label": "Is there another interest you believe an editor should consider for this submission?"
+      }
+    ]
+  },
+  "input": {
+    "protocolVersion": "0.1",
+    "policyId": "example.work",
+    "revision": "1",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "ties": [
+      {
+        "relationshipType": "research_funding",
+        "organizationId": "example:lark",
+        "start": "2019",
+        "end": "2020",
+        "supportedSubmittedWork": true
+      }
+    ],
+    "completeRuleIds": [
+      "work"
+    ],
+    "unresolvedRuleIds": [],
+    "answers": [
+      {
+        "ruleId": "other",
+        "answer": null
+      }
+    ]
+  },
+  "receipt": {
+    "protocolVersion": "0.1",
+    "policyId": "example.work",
+    "revision": "1",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "receiptId": "example-receipt",
+    "mode": "matches",
+    "reportable": true,
+    "matches": [
+      {
+        "ruleId": "work",
+        "kind": "tie",
+        "relationshipType": "research_funding",
+        "organizationId": "example:lark"
+      }
+    ]
+  },
+  "statement": "The author reports research funding (Lark Computing). Assessment under Example Work Policy (revision 1) for this submission is incomplete."
+}

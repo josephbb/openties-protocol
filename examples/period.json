@@ -1,0 +1,90 @@
+{
+  "policy": {
+    "protocolVersion": "0.1",
+    "policyId": "example.period",
+    "revision": "2",
+    "publisher": "Example Publishing",
+    "title": "Example Period Policy",
+    "policyUrl": "https://example.org/policies/period/2",
+    "role": "author",
+    "relationshipTypes": [
+      {
+        "id": "research_funding",
+        "label": "research funding"
+      },
+      {
+        "id": "consulting",
+        "label": "paid consulting"
+      }
+    ],
+    "organizations": [
+      {
+        "id": "example:lark",
+        "label": "Lark Computing"
+      },
+      {
+        "id": "example:fern",
+        "label": "Fern Foundation"
+      }
+    ],
+    "rules": [
+      {
+        "id": "period",
+        "label": "Funding and consulting from the two listed organizations in the past 36 months",
+        "kind": "ties",
+        "relationshipTypes": [
+          "research_funding",
+          "consulting"
+        ],
+        "organizationIds": [
+          "example:lark",
+          "example:fern"
+        ],
+        "window": {
+          "kind": "lookback",
+          "months": 36
+        }
+      }
+    ]
+  },
+  "input": {
+    "protocolVersion": "0.1",
+    "policyId": "example.period",
+    "revision": "2",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "ties": [
+      {
+        "relationshipType": "research_funding",
+        "organizationId": "example:lark",
+        "start": "2024",
+        "end": "2025",
+        "supportedSubmittedWork": null
+      }
+    ],
+    "completeRuleIds": [
+      "period"
+    ],
+    "unresolvedRuleIds": [],
+    "answers": []
+  },
+  "receipt": {
+    "protocolVersion": "0.1",
+    "policyId": "example.period",
+    "revision": "2",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "receiptId": "example-receipt",
+    "mode": "matches",
+    "reportable": true,
+    "matches": [
+      {
+        "ruleId": "period",
+        "kind": "tie",
+        "relationshipType": "research_funding",
+        "organizationId": "example:lark"
+      }
+    ]
+  },
+  "statement": "The author reports research funding (Lark Computing). The author declares no other interests reportable under Example Period Policy (revision 2) for this submission."
+}

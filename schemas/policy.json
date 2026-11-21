@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Publisher policy",
+  "type": "object",
+  "properties": {
+    "protocolVersion": {
+      "const": "0.1"
+    },
+    "policyId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+    },
+    "publisher": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "policyUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "role": {
+      "const": "author"
+    },
+    "relationshipTypes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label"
+        ]
+      },
+      "minItems": 1
+    },
+    "organizations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label"
+        ]
+      },
+      "minItems": 1
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "const": "ties"
+              },
+              "relationshipTypes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+                },
+                "uniqueItems": true,
+                "minItems": 1
+              },
+              "organizationIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+                },
+                "uniqueItems": true,
+                "minItems": 1
+              },
+              "window": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "lookback"
+                      },
+                      "months": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 1200
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "months"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "submitted-work"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ]
+                  }
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "kind",
+              "relationshipTypes",
+              "organizationIds",
+              "window"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "const": "author-question"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "kind"
+            ]
+          }
+        ]
+      },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "protocolVersion",
+    "policyId",
+    "revision",
+    "publisher",
+    "title",
+    "policyUrl",
+    "role",
+    "relationshipTypes",
+    "organizations",
+    "rules"
+  ]
+}

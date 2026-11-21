@@ -1,0 +1,360 @@
+[
+  {
+    "name": "inclusive lower boundary",
+    "example": "period",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": "2023-11-20",
+          "end": "2023-11-20",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": true,
+      "complete": true
+    }
+  },
+  {
+    "name": "one day outside",
+    "example": "period",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": "2023",
+          "end": "2023-11-19",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": false,
+      "complete": true
+    }
+  },
+  {
+    "name": "inclusive upper boundary",
+    "example": "period",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": "2026-11-20",
+          "end": null,
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": true,
+      "complete": true
+    }
+  },
+  {
+    "name": "year straddling boundary",
+    "example": "period",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": "2021",
+          "end": "2023",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "unknown end after historic start",
+    "example": "period",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": "2020",
+          "end": null,
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "unknown dates",
+    "example": "period",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": null,
+          "end": null,
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "known end inside window",
+    "example": "period",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": null,
+          "end": "2025",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": true,
+      "complete": true
+    }
+  },
+  {
+    "name": "missing identity",
+    "example": "period",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": null,
+          "start": "2024",
+          "end": "2025",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "confirmed out of scope",
+    "example": "period",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:other",
+          "start": "2024",
+          "end": "2025",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": false,
+      "complete": true
+    }
+  },
+  {
+    "name": "scope reviewed",
+    "example": "period",
+    "input": {
+      "ties": []
+    },
+    "expected": {
+      "reportable": false,
+      "complete": true
+    }
+  },
+  {
+    "name": "empty profile without attestation",
+    "example": "period",
+    "input": {
+      "ties": [],
+      "completeRuleIds": []
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "pending evidence",
+    "example": "period",
+    "input": {
+      "ties": [],
+      "unresolvedRuleIds": [
+        "period"
+      ]
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "positive beats missing coverage",
+    "example": "period",
+    "input": {
+      "completeRuleIds": []
+    },
+    "expected": {
+      "reportable": true,
+      "complete": false
+    }
+  },
+  {
+    "name": "match and unresolved",
+    "example": "period",
+    "input": {
+      "unresolvedRuleIds": [
+        "period"
+      ]
+    },
+    "expected": {
+      "reportable": true,
+      "complete": false
+    }
+  },
+  {
+    "name": "leap day clamp",
+    "example": "period",
+    "input": {
+      "submissionDate": "2027-02-28",
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": "2024-02-28",
+          "end": "2024-02-28",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": true,
+      "complete": true
+    }
+  },
+  {
+    "name": "February adjustment",
+    "example": "period",
+    "input": {
+      "submissionDate": "2024-02-29",
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": "2021-02-28",
+          "end": "2021-02-28",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": true,
+      "complete": true
+    }
+  },
+  {
+    "name": "older direct support",
+    "example": "work",
+    "input": {
+      "answers": [
+        {
+          "ruleId": "other",
+          "answer": false
+        }
+      ]
+    },
+    "expected": {
+      "reportable": true,
+      "complete": true
+    }
+  },
+  {
+    "name": "unknown manuscript connection",
+    "example": "work",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": "2019",
+          "end": "2020",
+          "supportedSubmittedWork": null
+        }
+      ],
+      "answers": [
+        {
+          "ruleId": "other",
+          "answer": false
+        }
+      ]
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "manual question unanswered",
+    "example": "work",
+    "input": {
+      "ties": []
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "manual affirmative without tie",
+    "example": "work",
+    "input": {
+      "ties": [],
+      "answers": [
+        {
+          "ruleId": "other",
+          "answer": true
+        }
+      ]
+    },
+    "expected": {
+      "reportable": true,
+      "complete": true
+    }
+  },
+  {
+    "name": "all rules complete and clear",
+    "example": "work",
+    "input": {
+      "ties": [],
+      "answers": [
+        {
+          "ruleId": "other",
+          "answer": false
+        }
+      ]
+    },
+    "expected": {
+      "reportable": false,
+      "complete": true
+    }
+  }
+]
