@@ -12,7 +12,8 @@ Draft 0.1 covers authors submitting manuscripts to journals. The first example r
 
 <a id="worked-example"></a>
 
-### 1. A journal asks about three years of industry ties
+<details>
+<summary><strong>1. A journal asks about three years of industry ties</strong></summary>
 
 A journal asks authors to disclose research collaborations, funding, and employment involving two companies named in its policy, Lark Computing and Alder Systems. It asks about the three years up to and including submission. For a paper submitted on **20 November 2026**, that takes the author back to **20 November 2023**.
 
@@ -63,7 +64,10 @@ Both receipts identify the submission and the policy revision. Neither lists the
 
 </details>
 
-### 2. A plaintiff asks about a defense expert's prior work
+</details>
+
+<details>
+<summary><strong>2. A plaintiff asks about a defense expert's prior work</strong></summary>
 
 Suppose a plaintiff's lawyer is considering a *Daubert* challenge to expert testimony about a Lark product. The lawyer wants to know whether, in the five years before the expert's report, Lark paid the witness to consult or give expert testimony about that product.
 
@@ -71,13 +75,18 @@ Suppose Lark paid the witness in 2024 to evaluate the product using the same tes
 
 With the witness's approval, a detailed response could say **“Yes. Paid consulting for Lark Computing.”** Counsel could then ask whether that work involved the test method used in the report and, if so, what the expert learned about its reliability. A fee may bear on bias. The court considering admissibility must separately assess the basis and reliability of the testimony under Rule 702. The five-year period here is the lawyer's hypothetical request. [Federal Rules of Evidence, Rule 702](https://www.uscourts.gov/forms-rules/current-rules-practice-procedure/federal-rules-evidence)
 
-### 3. A funder asks about ongoing ties to the companies under study
+</details>
+
+<details>
+<summary><strong>3. A funder asks about ongoing ties to the companies under study</strong></summary>
 
 A funder invites proposals to compare products made by Lark Computing and Alder Systems. Its eligibility rule says applicants may have **no ongoing research collaboration with, or research funding from, either company on the application date**.
 
 Take the author from the journal example, applying for the grant on the same day. The Lark grant ended in 2025, and the collaboration with Alder also finished that year. The author checks for any other funding or collaboration with either company and confirms there is none. Asked “Do you have a tie covered by this rule?”, the answer is **no**. That answer satisfies this particular eligibility condition. The journal still gets a **yes** from the same record because it asks about the past three years.
 
 If the author and the Alder team are still working together on the application date, the answer becomes **yes**. With approval to share the match, the funder would see **“Ongoing research collaboration with Alder Systems.”** If the records leave the end date open and the applicant hasn't confirmed whether the work continues, the answer is **unknown**. The funder would need that point resolved to establish eligibility.
+
+</details>
 
 ## Reading the schema
 
