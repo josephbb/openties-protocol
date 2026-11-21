@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "protocolVersion": {
-      "const": "0.1"
+      "const": "0.2"
     },
     "policyId": {
       "type": "string",
@@ -48,8 +48,7 @@
           "id",
           "label"
         ]
-      },
-      "minItems": 1
+      }
     },
     "organizations": {
       "type": "array",
@@ -63,6 +62,15 @@
           "label": {
             "type": "string",
             "minLength": 1
+          },
+          "externalIds": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://[a-zA-Z0-9._:/-]+$"
+            }
           }
         },
         "additionalProperties": false,
@@ -70,8 +78,7 @@
           "id",
           "label"
         ]
-      },
-      "minItems": 1
+      }
     },
     "rules": {
       "type": "array",
@@ -142,6 +149,15 @@
                     ]
                   }
                 ]
+              },
+              "organizationTypeIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+                },
+                "uniqueItems": true,
+                "minItems": 1
               }
             },
             "additionalProperties": false,
@@ -150,8 +166,19 @@
               "label",
               "kind",
               "relationshipTypes",
-              "organizationIds",
               "window"
+            ],
+            "anyOf": [
+              {
+                "required": [
+                  "organizationIds"
+                ]
+              },
+              {
+                "required": [
+                  "organizationTypeIds"
+                ]
+              }
             ]
           },
           {
@@ -179,6 +206,32 @@
         ]
       },
       "minItems": 1
+    },
+    "organizationTypes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "definition": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "definition"
+        ]
+      }
     }
   },
   "additionalProperties": false,

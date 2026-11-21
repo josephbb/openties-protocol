@@ -10,18 +10,20 @@ type Window = { kind: "lookback"; months: number } | { kind: "submitted-work" };
 type TieRule = Term & {
 	kind: "ties";
 	relationshipTypes: string[];
-	organizationIds: string[];
+	organizationIds?: string[];
+	organizationTypeIds?: string[];
 	window: Window;
 };
 type Question = Term & { kind: "author-question" };
-type Reference = { protocolVersion: "0.1"; policyId: string; revision: string };
+type Reference = { protocolVersion: "0.2"; policyId: string; revision: string };
 export type Policy = Reference & {
 	publisher: string;
 	title: string;
 	policyUrl: string;
 	role: "author";
 	relationshipTypes: Term[];
-	organizations: Term[];
+	organizations: (Term & { externalIds?: string[] })[];
+	organizationTypes?: (Term & { definition: string })[];
 	rules: (TieRule | Question)[];
 };
 type Tie = {
@@ -35,6 +37,12 @@ export type Input = Reference & {
 	submissionId: string;
 	submissionDate: string;
 	ties: Tie[];
+	additionalOrganizations?: (Term & { distinctFromListed: true })[];
+	organizationTypeAnswers?: {
+		organizationId: string;
+		typeId: string;
+		member: boolean;
+	}[];
 	completeRuleIds: string[];
 	unresolvedRuleIds: string[];
 	answers: { ruleId: string; answer: Flag }[];
@@ -45,6 +53,7 @@ type Match =
 			kind: "tie";
 			relationshipType: string;
 			organizationId: string;
+			organizationTypeId?: string;
 	  }
 	| { ruleId: string; kind: "answer" };
 type Receipt = Pick<
@@ -102,7 +111,10 @@ function lookback(date: string, months: number) {
 	return y * 10000 + m * 100 + Math.min(d, days[m - 1]);
 }
 function timeMatch(tie: Tie, rule: TieRule, date: string): Flag {
-	if (rule.window.kind === "submitted-work") return tie.supportedSubmittedWork;
+	if (rule.window.kind === "submitted-work") {
+		if (bounds(tie.start)[0] > day(date)) return false;
+		return tie.supportedSubmittedWork;
+	}
 	const from = lookback(date, rule.window.months);
 	const through = day(date);
 	const [startMin, startMax] = bounds(tie.start);
@@ -118,6 +130,41 @@ function timeMatch(tie: Tie, rule: TieRule, date: string): Flag {
 function aggregate(values: Flag[]): Flag {
 	if (values.includes(true)) return true;
 	return values.includes(null) ? null : false;
+}
+
+// A named match takes precedence. For a type match return the first confirmed
+// type in rule order, so the receipt can identify the basis for the match.
+function organizationMatch(
+	rule: TieRule,
+	id: string | null,
+	answers: Map<string, Map<string, boolean>>,
+): Flag | string {
+	if (id === null) return null;
+	if (rule.organizationIds?.includes(id)) return true;
+	let unresolved = false;
+	for (const type of rule.organizationTypeIds ?? []) {
+		const member = answers.get(id)?.get(type);
+		if (member === true) return type;
+		if (member === undefined) unresolved = true;
+	}
+	return unresolved ? null : false;
+}
+
+// Registry verification is done by the adapter. Here we verify spelling and
+// checksum offline so every evaluator can replay the same pinned mapping.
+function rorUrl(id: string): string | null {
+	const prefix = /^(?:(?:https?:\/\/)?(?:www\.)?ror\.org(?:\/|$)|ror:)/i;
+	if (!prefix.test(id) && !/^0[a-z0-9]{6}[0-9]{2}$/i.test(id)) return null;
+	const token = id.replace(prefix, "").replace(/\/$/, "").toLowerCase();
+	if (!/^0[0-9a-hjkmnp-tv-z]{6}[0-9]{2}$/.test(token))
+		throw new Error("Invalid ROR identifier");
+	const alphabet = "0123456789abcdefghjkmnpqrstvwxyz";
+	let number = 0;
+	for (const digit of token.slice(1, 7))
+		number = number * 32 + alphabet.indexOf(digit);
+	if (Number(token.slice(-2)) !== 98 - ((number * 100) % 97))
+		throw new Error("Invalid ROR checksum");
+	return "https://ror.org/" + token;
 }
 
 // All input and output boundaries validate independently of the host application.
@@ -136,6 +183,42 @@ export function evaluate(rawPolicy: unknown, rawInput: unknown) {
 		throw new Error("Policy revision mismatch");
 	const types = ids(policy.relationshipTypes),
 		orgs = ids(policy.organizations);
+	const additional = input.additionalOrganizations ?? [];
+	const knownOrgs = ids([...policy.organizations, ...additional]);
+	for (const id of knownOrgs) {
+		const ror = rorUrl(id);
+		if (ror && ror !== id) throw new Error("Use the full canonical ROR URL");
+	}
+	const canonical = new Map([...knownOrgs].map((id) => [id, id]));
+	for (const org of policy.organizations) {
+		for (const alias of org.externalIds ?? []) {
+			if (rorUrl(alias))
+				throw new Error("Use the verified ROR URL as the organization ID");
+			if (canonical.has(alias))
+				throw new Error("Ambiguous organization identifier");
+			canonical.set(alias, org.id);
+		}
+	}
+	function resolveOrganization(id: string) {
+		const resolved = canonical.get(rorUrl(id) ?? id);
+		if (!resolved) throw new Error("Unknown organization reference");
+		return resolved;
+	}
+	const orgTypes = ids(policy.organizationTypes ?? []);
+	const membership = new Map<string, Map<string, boolean>>();
+	for (const {
+		organizationId,
+		typeId,
+		member,
+	} of input.organizationTypeAnswers ?? []) {
+		const id = resolveOrganization(organizationId);
+		subset([typeId], orgTypes);
+		const answers = membership.get(id) ?? new Map<string, boolean>();
+		if (answers.has(typeId))
+			throw new Error("Duplicate organization type answer");
+		answers.set(typeId, member);
+		membership.set(id, answers);
+	}
 	ids(policy.rules);
 	const tieRules = new Set(
 		policy.rules.filter((r) => r.kind === "ties").map((r) => r.id),
@@ -148,10 +231,23 @@ export function evaluate(rawPolicy: unknown, rawInput: unknown) {
 	subset(answers, questions);
 	subset(input.completeRuleIds, tieRules);
 	subset(input.unresolvedRuleIds, tieRules);
-	for (const tie of input.ties) {
+	const ties = input.ties.map((tie) => {
+		if (tie.relationshipType !== null) subset([tie.relationshipType], types);
+		if (
+			tie.supportedSubmittedWork === true &&
+			bounds(tie.start)[0] > day(input.submissionDate)
+		)
+			throw new Error("Support starts after submission");
 		if (bounds(tie.start)[0] > bounds(tie.end)[1])
 			throw new Error("Inconsistent tie dates");
-	}
+		return {
+			...tie,
+			organizationId:
+				tie.organizationId === null
+					? null
+					: resolveOrganization(tie.organizationId),
+		};
+	});
 	const results = policy.rules.map((rule) => {
 		const matches: Match[] = [];
 		if (rule.kind === "author-question") {
@@ -166,14 +262,16 @@ export function evaluate(rawPolicy: unknown, rawInput: unknown) {
 			};
 		}
 		subset(rule.relationshipTypes, types);
-		subset(rule.organizationIds, orgs);
+		subset(rule.organizationIds ?? [], orgs);
+		subset(rule.organizationTypeIds ?? [], orgTypes);
 		let uncertain = input.unresolvedRuleIds.includes(rule.id);
-		for (const tie of input.ties) {
-			if (
-				tie.organizationId !== null &&
-				!rule.organizationIds.includes(tie.organizationId)
-			)
-				continue;
+		for (const tie of ties) {
+			const organization = organizationMatch(
+				rule,
+				tie.organizationId,
+				membership,
+			);
+			if (organization === false) continue;
 			if (
 				tie.relationshipType !== null &&
 				!rule.relationshipTypes.includes(tie.relationshipType)
@@ -183,6 +281,7 @@ export function evaluate(rawPolicy: unknown, rawInput: unknown) {
 			if (when === false) continue;
 			if (
 				when === null ||
+				organization === null ||
 				tie.organizationId === null ||
 				tie.relationshipType === null
 			) {
@@ -200,6 +299,9 @@ export function evaluate(rawPolicy: unknown, rawInput: unknown) {
 					kind: "tie",
 					relationshipType: tie.relationshipType,
 					organizationId: tie.organizationId,
+					...(typeof organization === "string"
+						? { organizationTypeId: organization }
+						: {}),
 				});
 			}
 		}
@@ -220,6 +322,7 @@ export function evaluate(rawPolicy: unknown, rawInput: unknown) {
 	};
 	return {
 		reference,
+		additionalOrganizations: additional.map(({ id, label }) => ({ id, label })),
 		results,
 		reportable: aggregate(results.map((r) => r.reportable)),
 		complete: results.every((r) => r.complete),
@@ -267,9 +370,10 @@ export function statement(policy: Policy, evaluation: Evaluation): string {
 				const type = policy.relationshipTypes.find(
 					(t) => t.id === match.relationshipType,
 				)!;
-				const org = policy.organizations.find(
-					(o) => o.id === match.organizationId,
-				)!;
+				const org = [
+					...policy.organizations,
+					...evaluation.additionalOrganizations,
+				].find((o) => o.id === match.organizationId)!;
 				const text =
 					"The author reports " + type.label + " (" + org.label + ").";
 				if (!lines.includes(text)) lines.push(text);

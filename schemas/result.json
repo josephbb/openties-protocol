@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "protocolVersion": {
-      "const": "0.1"
+      "const": "0.2"
     },
     "policyId": {
       "type": "string",
@@ -66,6 +66,10 @@
                 "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
               },
               "organizationId": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+              },
+              "organizationTypeId": {
                 "type": "string",
                 "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
               }

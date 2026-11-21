@@ -1,6 +1,6 @@
 {
   "policy": {
-    "protocolVersion": "0.1",
+    "protocolVersion": "0.2",
     "policyId": "example.work",
     "revision": "1",
     "publisher": "Example Publishing",
@@ -51,7 +51,7 @@
     ]
   },
   "input": {
-    "protocolVersion": "0.1",
+    "protocolVersion": "0.2",
     "policyId": "example.work",
     "revision": "1",
     "submissionId": "author-copy-001",
@@ -77,7 +77,7 @@
     ]
   },
   "receipt": {
-    "protocolVersion": "0.1",
+    "protocolVersion": "0.2",
     "policyId": "example.work",
     "revision": "1",
     "submissionId": "author-copy-001",

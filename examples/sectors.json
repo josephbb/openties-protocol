@@ -1,0 +1,103 @@
+{
+  "policy": {
+    "protocolVersion": "0.2",
+    "policyId": "example.sectors",
+    "revision": "1",
+    "publisher": "Example Publishing",
+    "title": "Example Journal Funding Policy",
+    "policyUrl": "https://example.org/policies/sectors/1",
+    "role": "author",
+    "relationshipTypes": [
+      {
+        "id": "research_funding",
+        "label": "research funding"
+      }
+    ],
+    "organizations": [],
+    "rules": [
+      {
+        "id": "funding",
+        "label": "Research funding from any industry organization or charity in the past 36 months",
+        "kind": "ties",
+        "relationshipTypes": [
+          "research_funding"
+        ],
+        "window": {
+          "kind": "lookback",
+          "months": 36
+        },
+        "organizationTypeIds": [
+          "industry",
+          "charity"
+        ]
+      }
+    ],
+    "organizationTypes": [
+      {
+        "id": "industry",
+        "label": "Industry",
+        "definition": "For-profit businesses that develop or sell products or services."
+      },
+      {
+        "id": "charity",
+        "label": "Charity",
+        "definition": "Organizations registered as charities in the jurisdiction where they operate."
+      }
+    ]
+  },
+  "input": {
+    "protocolVersion": "0.2",
+    "policyId": "example.sectors",
+    "revision": "1",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "ties": [
+      {
+        "relationshipType": "research_funding",
+        "organizationId": "https://example.org/organizations/fern",
+        "start": "2024",
+        "end": "2025",
+        "supportedSubmittedWork": null
+      }
+    ],
+    "completeRuleIds": [
+      "funding"
+    ],
+    "unresolvedRuleIds": [],
+    "answers": [],
+    "additionalOrganizations": [
+      {
+        "id": "https://example.org/organizations/fern",
+        "label": "Fern Foundation",
+        "distinctFromListed": true
+      }
+    ],
+    "organizationTypeAnswers": [
+      {
+        "organizationId": "https://example.org/organizations/fern",
+        "typeId": "charity",
+        "member": true
+      }
+    ]
+  },
+  "receipt": {
+    "protocolVersion": "0.2",
+    "policyId": "example.sectors",
+    "revision": "1",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "receiptId": "example-receipt",
+    "mode": "matches",
+    "reportable": true,
+    "matches": [
+      {
+        "kind": "tie",
+        "ruleId": "funding",
+        "relationshipType": "research_funding",
+        "organizationId": "https://example.org/organizations/fern",
+        "organizationTypeId": "charity"
+      }
+    ]
+  },
+  "statement": "The author reports research funding (Fern Foundation). The author declares no other interests reportable under Example Journal Funding Policy (revision 1) for this submission."
+}

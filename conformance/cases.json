@@ -163,6 +163,13 @@
           "end": "2025",
           "supportedSubmittedWork": null
         }
+      ],
+      "additionalOrganizations": [
+        {
+          "id": "example:other",
+          "label": "Other entity",
+          "distinctFromListed": true
+        }
       ]
     },
     "expected": {
@@ -354,6 +361,168 @@
     },
     "expected": {
       "reportable": false,
+      "complete": true
+    }
+  },
+  {
+    "name": "unclassified identified foundation",
+    "example": "sectors",
+    "input": {
+      "organizationTypeAnswers": []
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "excluded industry with unknown charity status",
+    "example": "sectors",
+    "input": {
+      "organizationTypeAnswers": [
+        {
+          "organizationId": "https://example.org/organizations/fern",
+          "typeId": "industry",
+          "member": false
+        }
+      ]
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "review excludes both types",
+    "example": "sectors",
+    "input": {
+      "organizationTypeAnswers": [
+        {
+          "organizationId": "https://example.org/organizations/fern",
+          "typeId": "industry",
+          "member": false
+        },
+        {
+          "organizationId": "https://example.org/organizations/fern",
+          "typeId": "charity",
+          "member": false
+        }
+      ]
+    },
+    "expected": {
+      "reportable": false,
+      "complete": true
+    }
+  },
+  {
+    "name": "unlisted company qualifies on industry alone",
+    "example": "sectors",
+    "input": {
+      "organizationTypeAnswers": [
+        {
+          "organizationId": "https://example.org/organizations/fern",
+          "typeId": "industry",
+          "member": true
+        }
+      ]
+    },
+    "expected": {
+      "reportable": true,
+      "complete": true
+    }
+  },
+  {
+    "name": "outside the window with unknown classification",
+    "example": "sectors",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "https://example.org/organizations/fern",
+          "start": "2017",
+          "end": "2018",
+          "supportedSubmittedWork": null
+        }
+      ],
+      "organizationTypeAnswers": []
+    },
+    "expected": {
+      "reportable": false,
+      "complete": true
+    }
+  },
+  {
+    "name": "future grant with unknown work support",
+    "example": "work",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": "2027",
+          "end": null,
+          "supportedSubmittedWork": null
+        }
+      ],
+      "answers": [
+        {
+          "ruleId": "other",
+          "answer": false
+        }
+      ]
+    },
+    "expected": {
+      "reportable": false,
+      "complete": true
+    }
+  },
+  {
+    "name": "grant starting in the submission year",
+    "example": "work",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": "2026",
+          "end": null,
+          "supportedSubmittedWork": true
+        }
+      ],
+      "answers": [
+        {
+          "ruleId": "other",
+          "answer": false
+        }
+      ]
+    },
+    "expected": {
+      "reportable": true,
+      "complete": true
+    }
+  },
+  {
+    "name": "support starts on submission day",
+    "example": "work",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "research_funding",
+          "organizationId": "example:lark",
+          "start": "2026-11-20",
+          "end": null,
+          "supportedSubmittedWork": true
+        }
+      ],
+      "answers": [
+        {
+          "ruleId": "other",
+          "answer": false
+        }
+      ]
+    },
+    "expected": {
+      "reportable": true,
       "complete": true
     }
   }

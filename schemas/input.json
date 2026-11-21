@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "protocolVersion": {
-      "const": "0.1"
+      "const": "0.2"
     },
     "policyId": {
       "type": "string",
@@ -151,6 +151,56 @@
         "required": [
           "ruleId",
           "answer"
+        ]
+      }
+    },
+    "additionalOrganizations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "distinctFromListed": {
+            "const": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "distinctFromListed"
+        ]
+      }
+    },
+    "organizationTypeAnswers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+          },
+          "typeId": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+          },
+          "member": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "organizationId",
+          "typeId",
+          "member"
         ]
       }
     }

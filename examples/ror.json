@@ -1,0 +1,83 @@
+{
+  "policy": {
+    "protocolVersion": "0.2",
+    "policyId": "example.ror",
+    "revision": "1",
+    "publisher": "Example Publishing",
+    "title": "Example Institutional Funding Policy",
+    "policyUrl": "https://example.org/policies/ror/1",
+    "role": "author",
+    "relationshipTypes": [
+      {
+        "id": "research_funding",
+        "label": "research funding"
+      }
+    ],
+    "organizations": [
+      {
+        "id": "https://ror.org/00jmfr291",
+        "label": "University of Michigan",
+        "externalIds": [
+          "https://openalex.org/I27837315"
+        ]
+      }
+    ],
+    "rules": [
+      {
+        "id": "period",
+        "label": "Research funding from the listed institution in the past 36 months",
+        "kind": "ties",
+        "relationshipTypes": [
+          "research_funding"
+        ],
+        "organizationIds": [
+          "https://ror.org/00jmfr291"
+        ],
+        "window": {
+          "kind": "lookback",
+          "months": 36
+        }
+      }
+    ]
+  },
+  "input": {
+    "protocolVersion": "0.2",
+    "policyId": "example.ror",
+    "revision": "1",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "ties": [
+      {
+        "relationshipType": "research_funding",
+        "organizationId": "https://openalex.org/I27837315",
+        "start": "2024",
+        "end": "2025",
+        "supportedSubmittedWork": null
+      }
+    ],
+    "completeRuleIds": [
+      "period"
+    ],
+    "unresolvedRuleIds": [],
+    "answers": []
+  },
+  "receipt": {
+    "protocolVersion": "0.2",
+    "policyId": "example.ror",
+    "revision": "1",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "receiptId": "example-receipt",
+    "mode": "matches",
+    "reportable": true,
+    "matches": [
+      {
+        "ruleId": "period",
+        "kind": "tie",
+        "relationshipType": "research_funding",
+        "organizationId": "https://ror.org/00jmfr291"
+      }
+    ]
+  },
+  "statement": "The author reports research funding (University of Michigan). The author declares no other interests reportable under Example Institutional Funding Policy (revision 1) for this submission."
+}
