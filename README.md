@@ -2,21 +2,44 @@
 
 Draft 0.1, for individual author disclosures at manuscript submission.
 
-A publisher defines what an author must report. An implementation applies those rules to confirmed relationships and submission-specific answers, shows the author a statement, and can issue an approved receipt to the journal. A journal can request a flag alone or the matching items. The author's private record stays with the evaluating system.
+A publisher defines what an author must disclose. For each submission, the author reviews a statement and approves exactly what the journal will receive. The author's private record stays with the evaluating system.
 
-## Reading the schema
+## Worked example
 
-| Document | What it means | Fields to look for |
+**What the journal asks.** For a manuscript submitted on 20 November 2026, Example Publishing requires authors to disclose research funding or paid consulting from Lark Computing or Fern Foundation during the previous 36 months. Under revision 2 of its policy, the period runs from 20 November 2023 through 20 November 2026, inclusive.
+
+**What the author reports privately.** This walkthrough adds an earlier consulting engagement to the [machine-readable example](examples/period.json) to show how the cutoff works.
+
+| Author's tie | When | Does the journal require it? |
 | --- | --- | --- |
-| [Journal policy](schemas/policy.json) | What does this journal ask the author to disclose? | `policyId` and `revision` identify the exact policy. Its `rules` say which ties count or ask the author a direct question. |
-| [Private author input](schemas/input.json) | What does the author know and affirm for this submission? | `ties` are confirmed relationships. `answers` are specific to this submission. `completeRuleIds` lists the tie rules the author explicitly reviewed for completeness. `unresolvedRuleIds` lists tie rules with outstanding evidence or coverage questions. |
-| [Approved receipt](schemas/result.json) | What does the author agree to send this journal? | `reportable` gives the result for the policy and submission. With `mode: "flag"` the journal receives the result and identifying references. With `mode: "matches"` it also receives the matching items. |
+| Research funding from Lark Computing | 2024–2025 | Yes. The grant overlaps the disclosure period. |
+| Paid consulting for Fern Foundation | 2021 | No. The engagement ended before the period began. |
 
-### A journal rule in practice
+The author confirms they have listed all funding and consulting covered by this rule. The grant makes the answer **yes**. The author's confirmation, with no outstanding questions, also supports the second sentence of their statement.
 
-> Disclose any research funding or paid consulting from Lark Computing or Fern Foundation during the 36 months ending on the submission date.
+> The author reports research funding (Lark Computing). The author declares no other interests reportable under Example Period Policy (revision 2) for this submission.
 
-Here is that rule as it appears in the policy. The policy gives each organization and relationship type a stable ID so the rule can refer to it by name across systems.
+### What the journal receives
+
+The journal receives a receipt after the author approves it. **`reportable` answers “Is there anything to disclose under this policy?”** The **`mode`** field controls how much detail accompanies that answer. For this author, either mode gives the same result.
+
+| Receipt mode | What the editor learns in this example |
+| --- | --- |
+| `flag` (default) | **Yes.** At least one interest qualifies. The receipt gives the editor the result, policy revision and submission references. |
+| `matches` | **Yes. Research funding from Lark Computing.** The receipt also identifies the rule that matched, the relationship type and the organization. |
+
+The Fern engagement stays private in both modes. The author reads the statement above separately. The receipt itself contains structured fields. [Full example receipt](examples/period.json)
+
+Either mode can return one of three answers.
+
+| `reportable` | How to read it |
+| --- | --- |
+| `true` | At least one interest qualifies. Even if the author still had another rule to review, the Lark grant would make this **yes**. A “no other interests” statement requires a complete review. |
+| `false` | No interest qualifies and the review is complete. This would be the answer if the author had only the 2021 Fern engagement and confirmed the full scope. |
+| `null` | The information is insufficient to answer. If the Fern engagement were the only known tie and the author had yet to confirm the full scope, the answer would still be **unknown**. |
+
+<details>
+<summary>See the journal rule as JSON</summary>
 
 ```json
 {
@@ -29,15 +52,17 @@ Here is that rule as it appears in the policy. The policy gives each organizatio
 }
 ```
 
-For a submission on **20 November 2026**, the window runs from **20 November 2023 through 20 November 2026**, inclusive. A Lark research grant held in 2024–2025 falls inside it. The author can report the grant immediately. To declare “no other interests” under this policy, the author must also confirm they have reported all funding and consulting covered by the rule, with any uncertainties resolved. [Full example with statement and receipt](examples/period.json)
+</details>
 
-| `reportable` | How the editor should read it |
-| --- | --- |
-| `true` | At least one interest meets the policy. Other questions may still be open. |
-| `false` | Every rule is complete and no interest meets the policy. |
-| `null` | There is too little information to tell. |
+Some journals also ask whether a grant **supported this manuscript**, regardless of its age. The [submitted-work example](examples/work.json) shows an older grant that qualifies and a separate question the author has yet to answer.
 
-Some journals also ask whether a grant **supported this manuscript**, regardless of its age. A `submitted-work` window captures that distinction. An `author-question` lets the journal ask about other interests that require the author's judgment. [Worked example with an older grant and an unanswered question](examples/work.json)
+## Reading the schema
+
+| Document | What it means | Fields to look for |
+| --- | --- | --- |
+| [Journal policy](schemas/policy.json) | What does this journal ask the author to disclose? | `policyId` and `revision` identify the exact policy. Its `rules` say which ties count or ask the author a direct question. |
+| [Private author input](schemas/input.json) | What does the author know and affirm for this submission? | `ties` are confirmed relationships. `answers` are specific to this submission. `completeRuleIds` lists the tie rules the author explicitly reviewed for completeness. `unresolvedRuleIds` lists tie rules with outstanding evidence or coverage questions. |
+| [Approved receipt](schemas/result.json) | What does the author agree to send this journal? | `reportable` gives the result for the policy and submission. `mode` specifies how much detail the author approved for the journal. |
 
 ## Specification and tools
 
