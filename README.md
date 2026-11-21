@@ -25,8 +25,13 @@ The journal receives a receipt after the author approves it. **`reportable` answ
 
 | Receipt mode | What the editor learns in this example |
 | --- | --- |
-| `flag` (default) | **Yes.** At least one interest qualifies. The receipt gives the editor the result, policy revision and submission references. |
+| `flag` (default) | **Yes.** At least one interest qualifies. The organization and relationship type stay private. |
 | `matches` | **Yes. Research funding from Lark Computing.** The receipt also identifies the rule that matched, the relationship type and the organization. |
+
+Both receipts identify which rules were used and which submission the answer belongs to.
+
+- **Which rules?** The journal's policy ID is `example.period`, and its revision is `2`. If the journal later changes the lookback to 60 months, it issues a new revision. This receipt still answers the original 36-month question.
+- **Which submission?** The journal can use `submissionId` (here, `author-copy-001`) to associate the answer with this author's submission. The `submissionDate` is 20 November 2026, the date used to count back 36 months.
 
 The Fern engagement stays private in both modes. The author reads the statement above separately. The receipt itself contains structured fields. [Full example receipt](examples/period.json)
 
