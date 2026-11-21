@@ -9,19 +9,23 @@ type Term = { id: string; label: string };
 type Window = { kind: "lookback"; months: number } | { kind: "submitted-work" };
 type TieRule = Term & {
 	kind: "ties";
-	relationshipTypes: string[];
+	anyRelationship?: true;
+	relationshipTypes?: string[];
+	relationshipCategoryIds?: string[];
+	anyOrganization?: true;
 	organizationIds?: string[];
 	organizationTypeIds?: string[];
 	window: Window;
 };
 type Question = Term & { kind: "author-question" };
-type Reference = { protocolVersion: "0.2"; policyId: string; revision: string };
+type Reference = { protocolVersion: "0.3"; policyId: string; revision: string };
 export type Policy = Reference & {
 	publisher: string;
 	title: string;
 	policyUrl: string;
 	role: "author";
 	relationshipTypes: Term[];
+	relationshipCategories?: (Term & { relationshipTypes: string[] })[];
 	organizations: (Term & { externalIds?: string[] })[];
 	organizationTypes?: (Term & { definition: string })[];
 	rules: (TieRule | Question)[];
@@ -37,6 +41,7 @@ export type Input = Reference & {
 	submissionId: string;
 	submissionDate: string;
 	ties: Tie[];
+	additionalRelationshipTypes?: (Term & { distinctFromListed: true })[];
 	additionalOrganizations?: (Term & { distinctFromListed: true })[];
 	organizationTypeAnswers?: {
 		organizationId: string;
@@ -51,8 +56,8 @@ type Match =
 	| {
 			ruleId: string;
 			kind: "tie";
-			relationshipType: string;
-			organizationId: string;
+			relationshipType: string | null;
+			organizationId: string | null;
 			organizationTypeId?: string;
 	  }
 	| { ruleId: string; kind: "answer" };
@@ -139,6 +144,7 @@ function organizationMatch(
 	id: string | null,
 	answers: Map<string, Map<string, boolean>>,
 ): Flag | string {
+	if (rule.anyOrganization) return true;
 	if (id === null) return null;
 	if (rule.organizationIds?.includes(id)) return true;
 	let unresolved = false;
@@ -183,6 +189,11 @@ export function evaluate(rawPolicy: unknown, rawInput: unknown) {
 		throw new Error("Policy revision mismatch");
 	const types = ids(policy.relationshipTypes),
 		orgs = ids(policy.organizations);
+	const extraTypes = input.additionalRelationshipTypes ?? [];
+	const knownTypes = ids([...policy.relationshipTypes, ...extraTypes]);
+	const categories = policy.relationshipCategories ?? [];
+	const categoryIds = ids(categories);
+	for (const category of categories) subset(category.relationshipTypes, types);
 	const additional = input.additionalOrganizations ?? [];
 	const knownOrgs = ids([...policy.organizations, ...additional]);
 	for (const id of knownOrgs) {
@@ -232,7 +243,8 @@ export function evaluate(rawPolicy: unknown, rawInput: unknown) {
 	subset(input.completeRuleIds, tieRules);
 	subset(input.unresolvedRuleIds, tieRules);
 	const ties = input.ties.map((tie) => {
-		if (tie.relationshipType !== null) subset([tie.relationshipType], types);
+		if (tie.relationshipType !== null)
+			subset([tie.relationshipType], knownTypes);
 		if (
 			tie.supportedSubmittedWork === true &&
 			bounds(tie.start)[0] > day(input.submissionDate)
@@ -261,7 +273,14 @@ export function evaluate(rawPolicy: unknown, rawInput: unknown) {
 				matches,
 			};
 		}
-		subset(rule.relationshipTypes, types);
+		subset(rule.relationshipTypes ?? [], types);
+		subset(rule.relationshipCategoryIds ?? [], categoryIds);
+		const selectedTypes = new Set(rule.relationshipTypes);
+		for (const category of categories) {
+			if (rule.relationshipCategoryIds?.includes(category.id)) {
+				for (const type of category.relationshipTypes) selectedTypes.add(type);
+			}
+		}
 		subset(rule.organizationIds ?? [], orgs);
 		subset(rule.organizationTypeIds ?? [], orgTypes);
 		let uncertain = input.unresolvedRuleIds.includes(rule.id);
@@ -273,8 +292,9 @@ export function evaluate(rawPolicy: unknown, rawInput: unknown) {
 			);
 			if (organization === false) continue;
 			if (
+				!rule.anyRelationship &&
 				tie.relationshipType !== null &&
-				!rule.relationshipTypes.includes(tie.relationshipType)
+				!selectedTypes.has(tie.relationshipType)
 			)
 				continue;
 			const when = timeMatch(tie, rule, input.submissionDate);
@@ -282,11 +302,15 @@ export function evaluate(rawPolicy: unknown, rawInput: unknown) {
 			if (
 				when === null ||
 				organization === null ||
-				tie.organizationId === null ||
-				tie.relationshipType === null
+				(!rule.anyRelationship && tie.relationshipType === null)
 			) {
 				uncertain = true;
-			} else if (
+				continue;
+			}
+			// A wildcard settles scope even when the matching detail is unknown.
+			if (tie.relationshipType === null || tie.organizationId === null)
+				uncertain = true;
+			if (
 				!matches.some(
 					(m) =>
 						m.kind === "tie" &&
@@ -322,6 +346,10 @@ export function evaluate(rawPolicy: unknown, rawInput: unknown) {
 	};
 	return {
 		reference,
+		additionalRelationshipTypes: extraTypes.map(({ id, label }) => ({
+			id,
+			label,
+		})),
 		additionalOrganizations: additional.map(({ id, label }) => ({ id, label })),
 		results,
 		reportable: aggregate(results.map((r) => r.reportable)),
@@ -367,15 +395,20 @@ export function statement(policy: Policy, evaluation: Evaluation): string {
 						"”.",
 				);
 			} else {
-				const type = policy.relationshipTypes.find(
-					(t) => t.id === match.relationshipType,
-				)!;
+				const type = [
+					...policy.relationshipTypes,
+					...evaluation.additionalRelationshipTypes,
+				].find((t) => t.id === match.relationshipType);
 				const org = [
 					...policy.organizations,
 					...evaluation.additionalOrganizations,
-				].find((o) => o.id === match.organizationId)!;
+				].find((o) => o.id === match.organizationId);
 				const text =
-					"The author reports " + type.label + " (" + org.label + ").";
+					"The author reports " +
+					(type?.label ?? "a tie of unspecified type") +
+					" (" +
+					(org?.label ?? "organization unspecified") +
+					").";
 				if (!lines.includes(text)) lines.push(text);
 			}
 		}

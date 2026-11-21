@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "protocolVersion": {
-      "const": "0.2"
+      "const": "0.3"
     },
     "policyId": {
       "type": "string",
@@ -158,6 +158,21 @@
                 },
                 "uniqueItems": true,
                 "minItems": 1
+              },
+              "anyRelationship": {
+                "const": true
+              },
+              "anyOrganization": {
+                "const": true
+              },
+              "relationshipCategoryIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+                },
+                "uniqueItems": true,
+                "minItems": 1
               }
             },
             "additionalProperties": false,
@@ -165,18 +180,91 @@
               "id",
               "label",
               "kind",
-              "relationshipTypes",
               "window"
             ],
-            "anyOf": [
+            "allOf": [
               {
-                "required": [
-                  "organizationIds"
+                "oneOf": [
+                  {
+                    "required": [
+                      "anyRelationship"
+                    ],
+                    "not": {
+                      "anyOf": [
+                        {
+                          "required": [
+                            "relationshipTypes"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "relationshipCategoryIds"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "relationshipTypes"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "relationshipCategoryIds"
+                        ]
+                      }
+                    ],
+                    "not": {
+                      "required": [
+                        "anyRelationship"
+                      ]
+                    }
+                  }
                 ]
               },
               {
-                "required": [
-                  "organizationTypeIds"
+                "oneOf": [
+                  {
+                    "required": [
+                      "anyOrganization"
+                    ],
+                    "not": {
+                      "anyOf": [
+                        {
+                          "required": [
+                            "organizationIds"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "organizationTypeIds"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "organizationIds"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "organizationTypeIds"
+                        ]
+                      }
+                    ],
+                    "not": {
+                      "required": [
+                        "anyOrganization"
+                      ]
+                    }
+                  }
                 ]
               }
             ]
@@ -230,6 +318,37 @@
           "id",
           "label",
           "definition"
+        ]
+      }
+    },
+    "relationshipCategories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "relationshipTypes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+            },
+            "uniqueItems": true,
+            "minItems": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "relationshipTypes"
         ]
       }
     }

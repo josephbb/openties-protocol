@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "protocolVersion": {
-      "const": "0.2"
+      "const": "0.3"
     },
     "policyId": {
       "type": "string",
@@ -62,12 +62,26 @@
                 "const": "tie"
               },
               "relationshipType": {
-                "type": "string",
-                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "organizationId": {
-                "type": "string",
-                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "organizationTypeId": {
                 "type": "string",

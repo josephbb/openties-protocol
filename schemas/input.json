@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "protocolVersion": {
-      "const": "0.2"
+      "const": "0.3"
     },
     "policyId": {
       "type": "string",
@@ -201,6 +201,31 @@
           "organizationId",
           "typeId",
           "member"
+        ]
+      }
+    },
+    "additionalRelationshipTypes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "distinctFromListed": {
+            "const": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "distinctFromListed"
         ]
       }
     }

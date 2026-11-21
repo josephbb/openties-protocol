@@ -1,0 +1,137 @@
+{
+  "policy": {
+    "protocolVersion": "0.3",
+    "policyId": "example.categories",
+    "revision": "1",
+    "publisher": "Example Publishing",
+    "title": "Example Funding and Governance Policy",
+    "policyUrl": "https://example.org/policies/categories/1",
+    "role": "author",
+    "relationshipTypes": [
+      {
+        "id": "grant",
+        "label": "research funding"
+      },
+      {
+        "id": "board",
+        "label": "board service"
+      },
+      {
+        "id": "employment",
+        "label": "employment"
+      }
+    ],
+    "organizations": [],
+    "rules": [
+      {
+        "id": "selected",
+        "kind": "ties",
+        "label": "Funding or governance roles with any organization in the past five years",
+        "window": {
+          "kind": "lookback",
+          "months": 60
+        },
+        "relationshipCategoryIds": [
+          "funding",
+          "governance"
+        ],
+        "anyOrganization": true
+      }
+    ],
+    "relationshipCategories": [
+      {
+        "id": "funding",
+        "label": "Research support",
+        "relationshipTypes": [
+          "grant"
+        ]
+      },
+      {
+        "id": "governance",
+        "label": "Governance roles",
+        "relationshipTypes": [
+          "board"
+        ]
+      }
+    ]
+  },
+  "input": {
+    "protocolVersion": "0.3",
+    "policyId": "example.categories",
+    "revision": "1",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "ties": [
+      {
+        "relationshipType": "grant",
+        "organizationId": "example:lark",
+        "start": "2024",
+        "end": "2024",
+        "supportedSubmittedWork": null
+      },
+      {
+        "relationshipType": "board",
+        "organizationId": "example:fern",
+        "start": "2025",
+        "end": "2025",
+        "supportedSubmittedWork": null
+      },
+      {
+        "relationshipType": "employment",
+        "organizationId": "example:lark",
+        "start": "2022",
+        "end": "2022",
+        "supportedSubmittedWork": null
+      },
+      {
+        "relationshipType": "board",
+        "organizationId": "example:lark",
+        "start": "2020",
+        "end": "2020",
+        "supportedSubmittedWork": null
+      }
+    ],
+    "completeRuleIds": [
+      "selected"
+    ],
+    "unresolvedRuleIds": [],
+    "answers": [],
+    "additionalOrganizations": [
+      {
+        "id": "example:lark",
+        "label": "Lark Computing",
+        "distinctFromListed": true
+      },
+      {
+        "id": "example:fern",
+        "label": "Fern Foundation",
+        "distinctFromListed": true
+      }
+    ]
+  },
+  "receipt": {
+    "protocolVersion": "0.3",
+    "policyId": "example.categories",
+    "revision": "1",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "receiptId": "example-receipt",
+    "mode": "matches",
+    "reportable": true,
+    "matches": [
+      {
+        "ruleId": "selected",
+        "kind": "tie",
+        "relationshipType": "grant",
+        "organizationId": "example:lark"
+      },
+      {
+        "ruleId": "selected",
+        "kind": "tie",
+        "relationshipType": "board",
+        "organizationId": "example:fern"
+      }
+    ]
+  },
+  "statement": "The author reports research funding (Lark Computing). The author reports board service (Fern Foundation). The author declares no other interests reportable under Example Funding and Governance Policy (revision 1) for this submission."
+}

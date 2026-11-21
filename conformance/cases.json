@@ -525,5 +525,142 @@
       "reportable": true,
       "complete": true
     }
+  },
+  {
+    "name": "wildcards include an in-window confirmed tie with unidentified details",
+    "example": "five-years",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": null,
+          "organizationId": null,
+          "start": "2023",
+          "end": "2023",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": true,
+      "complete": false
+    }
+  },
+  {
+    "name": "wildcards preserve time uncertainty at five-year boundary",
+    "example": "five-years",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": null,
+          "organizationId": null,
+          "start": "2021",
+          "end": "2021",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "wildcards exclude an out-of-window unidentified tie",
+    "example": "five-years",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": null,
+          "organizationId": null,
+          "start": "2020",
+          "end": "2020",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": false,
+      "complete": true
+    }
+  },
+  {
+    "name": "all ties without any confirmed entries needs full-scope review",
+    "example": "five-years",
+    "input": {
+      "ties": [],
+      "completeRuleIds": []
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "no ties after full-scope review",
+    "example": "five-years",
+    "input": {
+      "ties": []
+    },
+    "expected": {
+      "reportable": false,
+      "complete": true
+    }
+  },
+  {
+    "name": "category rule cannot settle an unknown relationship type",
+    "example": "categories",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": null,
+          "organizationId": "example:lark",
+          "start": "2023",
+          "end": "2023",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": null,
+      "complete": false
+    }
+  },
+  {
+    "name": "any organization includes confirmed funding with unresolved institution",
+    "example": "categories",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "grant",
+          "organizationId": null,
+          "start": "2023",
+          "end": "2023",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": true,
+      "complete": false
+    }
+  },
+  {
+    "name": "named relationship outside every selected category",
+    "example": "categories",
+    "input": {
+      "ties": [
+        {
+          "relationshipType": "employment",
+          "organizationId": "example:lark",
+          "start": "2023",
+          "end": "2023",
+          "supportedSubmittedWork": null
+        }
+      ]
+    },
+    "expected": {
+      "reportable": false,
+      "complete": true
+    }
   }
 ]

@@ -2,6 +2,8 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 const { evaluate, receipt, statement } = require("../dist/src/index.js");
 const examples = {
+	"five-years": require("../examples/five-years.json"),
+	categories: require("../examples/categories.json"),
 	ror: require("../examples/ror.json"),
 	sectors: require("../examples/sectors.json"),
 	industry: require("../examples/industry.json"),
@@ -88,7 +90,7 @@ invalid.push(
 	[
 		"previous draft requires its pinned evaluator",
 		policy,
-		{ ...input, protocolVersion: "0.1" },
+		{ ...input, protocolVersion: "0.2" },
 	],
 	[
 		"undeclared organization type selector",
@@ -292,5 +294,128 @@ test("ROR typos, unpinned RORs and ambiguous declarations cannot clear the rule"
 				input,
 			),
 		/verified ROR/,
+	);
+});
+
+const broad = examples["five-years"];
+const grouped = examples.categories;
+const groupedRule = grouped.policy.rules[0];
+test("category members and explicit relationship types form one union", () => {
+	const policy = {
+		...grouped.policy,
+		rules: [{ ...groupedRule, relationshipTypes: ["grant", "employment"] }],
+	};
+	const result = receipt(evaluate(policy, grouped.input), "r1", "matches");
+	assert.deepEqual(
+		result.matches.map((m) => m.relationshipType),
+		["grant", "board", "employment"],
+	);
+});
+test("any relationship can be restricted to a sector", () => {
+	const { policy, input } = examples.sectors;
+	const { relationshipTypes, ...rule } = policy.rules[0];
+	const p = { ...policy, rules: [{ ...rule, anyRelationship: true }] };
+	const i = { ...input, ties: [{ ...input.ties[0], relationshipType: null }] };
+	const e = evaluate(p, i);
+	assert.equal(e.reportable, true);
+	assert.equal(e.complete, false);
+	assert.equal(
+		receipt(e, "r1", "matches").matches[0].organizationTypeId,
+		"charity",
+	);
+	assert.equal(
+		evaluate(p, { ...i, organizationTypeAnswers: [] }).reportable,
+		null,
+	);
+});
+test("unidentified match exposes only known detail and the statement remains incomplete", () => {
+	const input = {
+		...broad.input,
+		ties: [
+			{ ...broad.input.ties[0], relationshipType: null, organizationId: null },
+		],
+	};
+	const e = evaluate(broad.policy, input);
+	assert.deepEqual(receipt(e, "r1", "matches").matches, [
+		{
+			ruleId: "all",
+			kind: "tie",
+			relationshipType: null,
+			organizationId: null,
+		},
+	]);
+	assert.equal(receipt(e, "r1").matches, undefined);
+	assert.match(
+		statement(broad.policy, e),
+		/unspecified type .*organization unspecified.*incomplete/,
+	);
+});
+for (const [name, change] of [
+	[
+		"wildcard with specific types",
+		{ anyRelationship: true, relationshipTypes: ["board"] },
+	],
+	[
+		"wildcard with a category",
+		{ anyRelationship: true, relationshipCategoryIds: ["funding"] },
+	],
+	["wildcard with named organizations", { organizationIds: ["example:lark"] }],
+	["wildcard with organization types", { organizationTypeIds: ["charity"] }],
+	["implicit relationship wildcard", { anyRelationship: undefined }],
+	["implicit organization wildcard", { anyOrganization: undefined }],
+	[
+		"empty category selection",
+		{ anyRelationship: undefined, relationshipCategoryIds: [] },
+	],
+])
+	test(name + " is rejected", () => {
+		const rule = JSON.parse(
+			JSON.stringify({ ...broad.policy.rules[0], ...change }),
+		);
+		assert.throws(
+			() => evaluate({ ...broad.policy, rules: [rule] }, broad.input),
+			/Invalid policy/,
+		);
+	});
+test("unknown categories, unknown members and input type typos are errors", () => {
+	assert.throws(
+		() =>
+			evaluate(
+				{
+					...grouped.policy,
+					rules: [{ ...groupedRule, relationshipCategoryIds: ["typo"] }],
+				},
+				grouped.input,
+			),
+		/Unknown reference/,
+	);
+	assert.throws(
+		() =>
+			evaluate(
+				{
+					...grouped.policy,
+					relationshipCategories: [
+						{ id: "funding", label: "Funding", relationshipTypes: ["typo"] },
+					],
+				},
+				grouped.input,
+			),
+		/Unknown reference/,
+	);
+	assert.throws(
+		() =>
+			evaluate(broad.policy, {
+				...broad.input,
+				ties: [{ ...broad.input.ties[0], relationshipType: "typo" }],
+			}),
+		/Unknown reference/,
+	);
+	assert.throws(
+		() =>
+			evaluate(grouped.policy, {
+				...grouped.input,
+				additionalRelationshipTypes: broad.input.additionalRelationshipTypes,
+			}),
+		/Duplicate identifier/,
 	);
 });

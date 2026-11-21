@@ -4,7 +4,7 @@ Over the course of a career, researchers accumulate financial and non-financial 
 
 At submission, we usually ask authors to reconstruct that history from memory, read the journal's policy, and work out what belongs in a disclosure statement. The next journal may ask a slightly different question. An author willing to publish a full list of ties can save everyone some work. Others may be quite willing to disclose who funded a particular study while preferring to keep the rest of their professional lives private. Requiring a public list as the price of participation risks losing those authors altogether.
 
-Draft 0.2 describes how one author answers one journal’s policy for one manuscript. The journal supplies the edition of the policy that applies to the submission. A repository of researcher ties, such as [OpenTies.org](https://openties.org/), checks the author’s private record and asks about anything it cannot settle. The author can use the resulting statement in the paper and separately approve a receipt for the editor. The two parties can use different software.
+Draft 0.3 describes how one author answers one journal’s policy for one manuscript. The journal supplies the edition of the policy that applies to the submission. A repository of researcher ties, such as [OpenTies.org](https://openties.org/), checks the author’s private record and asks about anything it cannot settle. The author can use the resulting statement in the paper and separately approve a receipt for the editor. The two parties can use different software.
 
 ## What does the journal learn?
 
@@ -93,6 +93,18 @@ If the author and the Alder team are still working together on the application d
 
 </details>
 
+## Can a journal ask about any ties in the past five years?
+
+Yes. A journal can ask for every organizational tie during that period, choose particular categories of ties, or limit a request to particular kinds of organizations. It can leave the list of named organizations empty in all three cases.
+
+| The journal asks | What qualifies |
+| --- | --- |
+| “Have you had any ties to any organization in the past five years?” | On our example author’s record, research funding from Lark, board service at Fern and employment at Lark. A board role that ended in 2020 falls outside the window for a November 2026 submission. [Five-year policy and receipt](examples/five-years.json) |
+| “Any funding or governance roles in those five years, with any organization?” | The same record returns the grant and the board service. The policy defines which relationship types belong to each category. [Category policy and receipt](examples/categories.json) |
+| “Any ties to an industry organization or registered charity?” | The journal can combine any relationship with its own definitions of industry and charity, using the period it specifies. |
+
+Both receipt modes work with all of these questions. A **yes** requires one confirmed match. A **no** requires a complete review of the scope the journal actually asked about. If the author has checked only ties to technology companies, that review cannot clear a question about ties to every organization.
+
 ## Which organizations count?
 
 A journal can name specific organizations, ask about **any organization of a defined type**, or ask about either. For example, a journal might ask about funding from any for-profit business or registered charity in the past three years. Fern Foundation can qualify even if the journal has never heard of it. A repository that knows only Fern’s name must leave the charity question open until it can establish the answer. [Complete example with an unlisted foundation](examples/sectors.json)
@@ -137,7 +149,7 @@ The policies and author ties are fictional. The [ROR example](examples/ror.json)
 | --- | --- |
 | **Policy ID** (`policyId`) | The journal's identifier for a particular disclosure policy. The journal example uses `example.industry`. |
 | **Policy revision** (`revision`) | The edition of that policy used for the submission. In the journal example, revision `1` asks about the previous 36 months. If the journal changes that period to 60 months, it issues a new revision. The original receipt still refers to revision `1`. |
-| **Protocol version** (`protocolVersion`) | The edition of the shared instructions that software uses to read policies and receipts. This draft uses `0.2`. Many journal policies can use the same protocol version. |
+| **Protocol version** (`protocolVersion`) | The edition of the shared instructions that software uses to read policies and receipts. This draft uses `0.3`. Many journal policies can use the same protocol version. |
 | **Submission references** (`submissionId`, `submissionDate`) | Ada and Ben are coauthors on manuscript M123. The journal gives each a separate reference so it can attach each approved answer to the right person. The submission date sets the end of the period under review. Here the journal counts back from 20 November 2026. |
 | **Lookback** | How far back the journal asks the author to review their ties. In the example, the 36-month window includes both 20 November 2023 and 20 November 2026. |
 | **Completeness attestation** | The author's confirmation that they have reported all ties covered by a particular rule for this submission. It covers the organizations, relationship types and period or manuscript specified by that rule. |

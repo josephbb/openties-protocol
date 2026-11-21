@@ -1,0 +1,128 @@
+{
+  "policy": {
+    "protocolVersion": "0.3",
+    "policyId": "example.five-years",
+    "revision": "1",
+    "publisher": "Example Publishing",
+    "title": "Example Five-Year Policy",
+    "policyUrl": "https://example.org/policies/five-years/1",
+    "role": "author",
+    "relationshipTypes": [],
+    "organizations": [],
+    "rules": [
+      {
+        "kind": "ties",
+        "id": "all",
+        "label": "Any organizational tie in the five years through submission",
+        "window": {
+          "kind": "lookback",
+          "months": 60
+        },
+        "anyRelationship": true,
+        "anyOrganization": true
+      }
+    ]
+  },
+  "input": {
+    "protocolVersion": "0.3",
+    "policyId": "example.five-years",
+    "revision": "1",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "ties": [
+      {
+        "relationshipType": "grant",
+        "organizationId": "example:lark",
+        "start": "2024",
+        "end": "2024",
+        "supportedSubmittedWork": null
+      },
+      {
+        "relationshipType": "board",
+        "organizationId": "example:fern",
+        "start": "2025",
+        "end": "2025",
+        "supportedSubmittedWork": null
+      },
+      {
+        "relationshipType": "employment",
+        "organizationId": "example:lark",
+        "start": "2022",
+        "end": "2022",
+        "supportedSubmittedWork": null
+      },
+      {
+        "relationshipType": "board",
+        "organizationId": "example:lark",
+        "start": "2020",
+        "end": "2020",
+        "supportedSubmittedWork": null
+      }
+    ],
+    "completeRuleIds": [
+      "all"
+    ],
+    "unresolvedRuleIds": [],
+    "answers": [],
+    "additionalOrganizations": [
+      {
+        "id": "example:lark",
+        "label": "Lark Computing",
+        "distinctFromListed": true
+      },
+      {
+        "id": "example:fern",
+        "label": "Fern Foundation",
+        "distinctFromListed": true
+      }
+    ],
+    "additionalRelationshipTypes": [
+      {
+        "id": "grant",
+        "label": "research funding",
+        "distinctFromListed": true
+      },
+      {
+        "id": "board",
+        "label": "board service",
+        "distinctFromListed": true
+      },
+      {
+        "id": "employment",
+        "label": "employment",
+        "distinctFromListed": true
+      }
+    ]
+  },
+  "receipt": {
+    "protocolVersion": "0.3",
+    "policyId": "example.five-years",
+    "revision": "1",
+    "submissionId": "author-copy-001",
+    "submissionDate": "2026-11-20",
+    "receiptId": "example-receipt",
+    "mode": "matches",
+    "reportable": true,
+    "matches": [
+      {
+        "ruleId": "all",
+        "kind": "tie",
+        "relationshipType": "grant",
+        "organizationId": "example:lark"
+      },
+      {
+        "ruleId": "all",
+        "kind": "tie",
+        "relationshipType": "board",
+        "organizationId": "example:fern"
+      },
+      {
+        "ruleId": "all",
+        "kind": "tie",
+        "relationshipType": "employment",
+        "organizationId": "example:lark"
+      }
+    ]
+  },
+  "statement": "The author reports research funding (Lark Computing). The author reports board service (Fern Foundation). The author reports employment (Lark Computing). The author declares no other interests reportable under Example Five-Year Policy (revision 1) for this submission."
+}
